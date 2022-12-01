@@ -264,8 +264,11 @@ public:
 				stack_parse.push('F');
 
 				action = "归约";
-				string message(parse_str.at(index_left), len);
-				action.append(message);
+				string message;
+				for (int i = index_left; i <= index_left + len - 1; ++i)
+					message.push_back(parse_str.at(i));
+				change(message);
+				action += message;
 
 				// 删除分析串中的可归约子串[index_left, index_right]
 				parse_str.erase(index_left, len);
@@ -315,7 +318,7 @@ public:
 		// 如果出错
 		if (p == 0)
 			action = "出错";
-		// 保证此时输入串只剩下'#'，并且输入串只剩下’#'
+		// 保证此时分析栈没有除'#'和'F'以外的字符，并且输入串只剩下’#'
 		if (!stack_parse.hasOtherChar('F') && str == "#")
 			action = "成功";
 
