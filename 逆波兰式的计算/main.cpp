@@ -136,10 +136,29 @@ private:
 				continue;
 			}
 
-			if (lastIsDigit)
+			//if (parse_str.length() > 1)
+			//{
+			//	char next = parse_str[1];
+			//	if (lastIsDigit && isdigit(next))
+			//	{
+			//		lastIsDigit = false;
+			//		result_stack.push('&');
+			//	}
+			//}
+
+			char topChar;
+			bool isHighter;
+
+			if (first != ')')
 			{
-				lastIsDigit = false;
-				result_stack.push('&');
+				topChar = op_stack.top();
+				isHighter = isHighterAfter(first, topChar);
+
+				if (lastIsDigit && isHighter)
+				{
+					lastIsDigit = false;
+					result_stack.push('&');
+				}
 			}
 
 			// 如果是返括号，进行匹配
@@ -168,8 +187,8 @@ private:
 				continue;
 			}
 
-			char topChar = op_stack.top();
-			bool isHighter = isHighterAfter(first, topChar);
+			//char topChar = op_stack.top();
+			//bool isHighter = isHighterAfter(first, topChar);
 			
 			// 如果优先级高于栈顶，执行push操作
 			if (isHighter)
@@ -226,7 +245,87 @@ private:
 
 	void count()
 	{
-		string parse_str = castStr;
+		Stack_Parse count_stack;
+		string countStr = castStr;
+		int result = 0;
+
+		int point = 0;
+		int len = countStr.length();
+
+		cout << "运算栈" << "\t\t" << "剩余串" << endl;
+
+		while (countStr.length() > 0)
+		{
+			char c = countStr.at(0);
+			countStr.erase(0, 1);
+
+			// 数字
+			if (isdigit(c) || c == '&')
+				count_stack.push(c);
+			// 操作符
+			else
+			{
+				string a_str, b_str;
+				char temp_c;
+
+				// 读取右操作数
+				while (1)
+				{
+					temp_c = count_stack.top();
+					
+					if (temp_c == '&')
+						break;
+
+					b_str.insert(0, 1, temp_c);
+					count_stack.pop();
+				}
+
+				// 读取左操作数
+				// 先将栈顶的'&'出栈
+				count_stack.pop();
+				while (1)
+				{
+					if (count_stack.getStackElement() == "")
+						break;
+
+					temp_c = count_stack.top();
+
+					if (temp_c == '&')
+						break;
+
+					a_str.insert(0, 1, temp_c);
+					count_stack.pop();
+				}
+
+				// 开始运算
+				int a = stoi(a_str);
+				int b = stoi(b_str);
+
+				if (c == '+')
+					result = a + b;
+				else if (c == '-')
+					result = a - b;
+				else if (c == '*')
+					result = a * b;
+				else if (c == '/')
+					result = a / b;
+
+				count_stack.push('&');
+				string tempStr = to_string(result);
+
+				for (int i = 0; i < tempStr.length(); ++i)
+					count_stack.push(tempStr.at(i));
+			}
+
+			++point;
+
+			string out_stack = count_stack.getStackElement();
+			string out_str = countStr;
+
+			cout << out_stack << "\t\t" << out_str << endl;
+		}
+
+		cout << "逆波兰式" << castStr << "的计算机结果为" << result << endl;
 	}
 
 public:
@@ -234,8 +333,10 @@ public:
 
 	void parse(string str)
 	{
+		cout << "-----------------转换--------------------" << endl;
 		// 转换
 		cast(str);
+		cout << "-----------------计算--------------------" << endl;
 		// 计算
 		count();
 
