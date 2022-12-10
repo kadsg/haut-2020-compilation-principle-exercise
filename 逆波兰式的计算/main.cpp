@@ -152,7 +152,11 @@ private:
 					if (topChar != '(')
 						result_stack.push(topChar);
 					else
+					{
+						parse_str.erase(0, 1);
+						displayCast(op_stack, result_stack, parse_str);
 						break; // ¿®∫≈∆•≈‰≥…π¶
+					}
 
 					if (op_stack.isEmpty())
 					{
@@ -161,6 +165,7 @@ private:
 						break;
 					}
 				}
+				continue;
 			}
 
 			char topChar = op_stack.top();
