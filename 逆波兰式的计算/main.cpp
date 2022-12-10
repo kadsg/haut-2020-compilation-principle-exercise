@@ -310,7 +310,6 @@ private:
 				else if (c == '/')
 					result = a / b;
 
-				count_stack.push('&');
 				string tempStr = to_string(result);
 
 				for (int i = 0; i < tempStr.length(); ++i)
